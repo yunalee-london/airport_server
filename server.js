@@ -3,8 +3,9 @@ const app = express()
 const swaggerUi = require('swagger-ui-express')//library
 const airports = require('./airports.json')
 // load yaml file to json object
-const YAML = require('yamljs')
-const docs = YAML.load('./airports-config.yaml')
+const YAML = require('js-yaml')
+const fs = require('fs')
+const docs = YAML.load(fs.readFileSync('./airports-config.yaml').toString())
 const swaggerDocs = require('swagger-jsdoc')({
     swaggerDefinition: docs,
     apis: ['./server.js', './Airport.js']// reference the file of your schema
@@ -27,8 +28,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {explorer: tr
  *               $ref: '#/components/schemas/Airport'             
  */
 app.get('/airports', (req, res) => {
-    req.query;
-    res.send(airports)
+    //console.log(req.query.page)
+    if (req.query.page) {
+        res.send(airports.slice(0, 100))
+    } else {
+        res.send(airports)
+    }
+    //const {page, pageSize} = req.query
 })
 
 
@@ -63,13 +69,13 @@ app.get('/airports', (req, res) => {
  * */
 app.post('/airports', (req, res) => {
     airports.push(req.body)
-    res.send(airports)
+    res.send()
 })
 
 
 /**
  * @swagger
- * /airports/{icao}:  
+ * /airports/:icao:  
  *   put:
  *     summary: Replace a current airport with new data
  *     description: Replace the current airport
@@ -93,7 +99,7 @@ app.post('/airports', (req, res) => {
  *           'application/json': {}  
  * */
 
- app.put('/airports/{icao}', (req, res) => {
+ app.put('/airports/:icao', (req, res) => {
      let index = airports.findIndex(obj => obj.icao === req.params.icao)
      airports[index] = req.body
      res.send(airports)
@@ -102,7 +108,7 @@ app.post('/airports', (req, res) => {
 
  /**
  * @swagger
- * /airports/{icao}:  
+ * /airports/:icao:  
  *    delete:
  *     summary: Delete the current airport
  *     description: Delete the current airport
@@ -120,13 +126,13 @@ app.post('/airports', (req, res) => {
  *         content:
  *           'application/json': {}
  * */
-app.delete('airports/{icao}', (req, res) => {
+app.delete('airports/:icao', (req, res) => {
     let index = airports.findIndex(obj => obj.icao === req.params.icao);
     airports.splice(req.params.index, 1)
-    res.send(airports)
+    res.send()
 
 })
 
+module.exports = app
 
-
-app.listen(3000, () => console.log("Airport API ready. Documents at http://localhost:3000/api-docs"))
+//app.listen(3000, () => console.log("Airport API ready. Documents at http://localhost:3000/api-docs"))
