@@ -29,12 +29,22 @@ describe("My Airport server", () => {
     test("can POST an airport", (done) => {
         request(app)
             .post('/airports')
-            .send('icao=TEST') // x-www-form-urlencoded upload
+            .send(`{icao: "test"}`)
             .set('Accept', 'application/json')
             .expect(201)
-            .end
+            .end(done)
         })
-        });
+    })
+
+    test("can PUT an airport", (done) => {
+        request(app)
+            .put('/airports/:icao')
+            .send ('{icao: "00AK"}')
+            .set('Accept', 'application/json')
+            .expect(201)
+            .end(done)
+       })
+
 
 
 
@@ -62,3 +72,4 @@ describe("My Airport server", () => {
 //         done()
 //     })
 // })
+

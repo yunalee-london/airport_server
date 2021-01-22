@@ -13,6 +13,8 @@ const swaggerDocs = require('swagger-jsdoc')({
 
 //end-point
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {explorer: true}))
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 /**
  * @swagger
@@ -69,7 +71,7 @@ app.get('/airports', (req, res) => {
  * */
 app.post('/airports', (req, res) => {
     airports.push(req.body)
-    res.send()
+    res.status(201).send()
 })
 
 
@@ -85,8 +87,8 @@ app.post('/airports', (req, res) => {
  *           schema:
  *              $ref: '#/components/schemas/Airport'
  *     responses:
- *       201:
- *         description: Resource updated successfully
+ *       202:
+ *         description: Accepted
  *         content:
  *           'application/json': {}
  *       415:
@@ -102,7 +104,7 @@ app.post('/airports', (req, res) => {
  app.put('/airports/:icao', (req, res) => {
      let index = airports.findIndex(obj => obj.icao === req.params.icao)
      airports[index] = req.body
-     res.send(airports)
+     res.status(201).send()
 
     })
 
@@ -135,4 +137,4 @@ app.delete('airports/:icao', (req, res) => {
 
 module.exports = app
 
-//app.listen(3000, () => console.log("Airport API ready. Documents at http://localhost:3000/api-docs"))
+//app.listen(3000, () => console.log("Airport API ready. Documents at http://localhost:3000/api-docs"))s
